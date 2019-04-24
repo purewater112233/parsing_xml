@@ -78,6 +78,11 @@ class ArxmlExtraction:
             f.close()
 
     def get_xml_tags_path(self, write_to_file=True, with_brackets=False):
+        """
+        :param write_to_file: boolean
+        :param with_brackets: boolean
+        :return:
+        """
         if write_to_file:
             if with_brackets:
                 f = open('arxml_tag_path_export.txt', 'w')
@@ -102,16 +107,16 @@ class ArxmlExtraction:
 if __name__=="__main__":
     file = 'Cluster_Ethernet_FixedRepeatedShortNames_Rev2_20190311.arxml'
     file_output = 'temp.xml'
-    a = ArxmlExtraction(file, file_output)
-    a.remove_arxml_namespace()
-    a.import_arxml()
-    #a.iterate_recursively('I-SIGNAL-TRIGGERING-REF', 'all')
-    #a.iterate_recursively('DIAG-PDU-TYPE', 'attrib')
-    # a.iterate_recursively('ELEMENTS', 'text')
-    #a.iterate_recursively('I-SIGNAL-PORT', 'all')
-    #a.iterate_recursively('SHORT-NAME', 'text')
-    #a.iterate_recursively(tag_text_attrib='all')
-    #a.get_xml_tags_tree(write_to_file=1)
-    #a.iterate_with_iterparse("SHORT-LABEL")
-    #a.get_xml_tags_path(write_to_file=1)
-    a.get_xml_tags_path(with_brackets=0)
+    A = ArxmlExtraction(file, file_output)
+    A.remove_arxml_namespace()
+    A.import_arxml()
+    #A.iterate_recursively('I-SIGNAL-TRIGGERING-REF', 'all')
+    #A.iterate_recursively('DIAG-PDU-TYPE', 'attrib')
+    # A.iterate_recursively('ELEMENTS', 'text')
+    #A.iterate_recursively('I-SIGNAL-PORT', 'all')
+    #A.iterate_recursively('SHORT-NAME', 'text')
+    #A.iterate_recursively(tag_text_attrib='all')
+    #A.get_xml_tags_tree(write_to_file=1)
+    #A.iterate_with_iterparse("SHORT-LABEL")
+    #A.get_xml_tags_path(write_to_file=1)
+    A.get_xml_tags_path(with_brackets=1)
