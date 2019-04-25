@@ -22,7 +22,7 @@ class ArxmlExtraction:
 
     def iterate_recursively(self, str_value=None, tag_text_attrib='all'):
         """
-        This function returns all the text values for a given tag name
+        This function returns all the tag, text, or attrib values for a given tag name
         :param str_value: string to search for
         :param tag_text_attrib: string <'tag', 'text', 'attrib', 'all'>
         :return: values depending on tag_text_attrib
@@ -53,7 +53,7 @@ class ArxmlExtraction:
                 print(elem.text)
                 elem.clear()
 
-    def get_xml_tags_tree(self, write_to_file=True):
+    def get_xml_tags_tree(self, write_to_file=True, keep_index=True):
         """
         :param write_to_file: boolean
         :return:
@@ -66,9 +66,13 @@ class ArxmlExtraction:
             path = self.tree.getpath(tag)
             path = path.replace('/', '    ')
             spaces = Counter(path)
-            tag_name = path.split()[-1].split('[')[0]
+
             #use this split if you want to keep the index for similar tags
-            #tag_name = path.split()[-1]
+            if keep_index:
+                tag_name = path.split()[-1]
+            else:
+                tag_name = path.split()[-1].split('[')[0]
+
             tag_name = ' ' * (spaces[' '] - 4) + tag_name
             print(tag_name)
             if write_to_file:
@@ -103,6 +107,15 @@ class ArxmlExtraction:
         if write_to_file:
             f.close()
 
+    def find_using_tag_name_or_path(self, x):
+        """
+        search using relative path name, path name must match exactly
+        :param x: string, example of relative path name, './/PDU-TRIGGERING/I-PDU-PORT-REFS'
+        :return:
+        """
+        for i in self.root.iterfind(x):
+            print(i.tag, i.text, i.attrib)
+
 
 if __name__=="__main__":
     file = 'Cluster_Ethernet_FixedRepeatedShortNames_Rev2_20190311.arxml'
@@ -116,7 +129,8 @@ if __name__=="__main__":
     #A.iterate_recursively('I-SIGNAL-PORT', 'all')
     #A.iterate_recursively('SHORT-NAME', 'text')
     #A.iterate_recursively(tag_text_attrib='all')
-    #A.get_xml_tags_tree(write_to_file=1)
+    #A.get_xml_tags_tree(write_to_file=1, keep_index=0)
     #A.iterate_with_iterparse("SHORT-LABEL")
     #A.get_xml_tags_path(write_to_file=1)
-    A.get_xml_tags_path(with_brackets=1)
+    #A.get_xml_tags_path(with_brackets=0)
+    A.find_using_tag_name_or_path('.//I-PDU-PORT-REFS/I-PDU-PORT-REF')
