@@ -1,7 +1,9 @@
+from helpers import check_for_leading_characters, check_xml_xpath
 from lxml import etree
 from collections import Counter
 from remove_autosar_tag import replace_line
 import re
+import sys
 
 
 class ArxmlExtraction:
@@ -107,14 +109,36 @@ class ArxmlExtraction:
         if write_to_file:
             f.close()
 
-    def find_using_tag_name_or_path(self, x):
+    def find_using_tag_name_or_path(self, x, tag_text_attrib='all'):
         """
         search using relative path name, path name must match exactly
-        :param x: string, example of relative path name, './/PDU-TRIGGERING/I-PDU-PORT-REFS'
+        :param x: <str> example of relative path name, './/PDU-TRIGGERING/I-PDU-PORT-REFS'
+        :param tag_text_attrib: <str> choose from 'tag', 'text, 'attrib', or 'all'
         :return:
         """
+
+        x = check_for_leading_characters(x)
+
+        check_xpath = check_xml_xpath(x, 'arxml_tag_path_export_no_brackets.txt')
+
+        if not check_xpath:
+            raise Exception('This is an invalid XPath')
+
+        # check to see if the search string contains './/' otherwise add './/' to the front
+        if './/' in x[0:3]:
+            pass
+        else:
+            x = './/' + x
+
         for i in self.root.iterfind(x):
-            print(i.tag, i.text, i.attrib)
+            if tag_text_attrib == 'tag':
+                print(i.tag)
+            elif tag_text_attrib == 'text':
+                print(i.text)
+            elif tag_text_attrib == 'attrib':
+                print(i.attrib)
+            elif tag_text_attrib == 'all':
+                print("%s - %s - %s" % (i.tag, i.text, i.attrib))
 
 
 if __name__=="__main__":
@@ -133,4 +157,4 @@ if __name__=="__main__":
     #A.iterate_with_iterparse("SHORT-LABEL")
     #A.get_xml_tags_path(write_to_file=1)
     #A.get_xml_tags_path(with_brackets=0)
-    A.find_using_tag_name_or_path('.//I-PDU-PORT-REFS/I-PDU-PORT-REF')
+    A.find_using_tag_name_or_path('.//aI-PDU-PORT-REFS/I-PDU-PORT-REF', tag_text_attrib='all')
