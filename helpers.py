@@ -1,4 +1,5 @@
-# helper functions
+# helper functions to parse XML XPath
+
 
 def check_for_leading_characters(my_string):
     """
@@ -14,6 +15,7 @@ def check_for_leading_characters(my_string):
 
     return my_string[(store_index + 1):]
 
+
 def check_xml_xpath(my_string, file_name):
     """
     This function checks that the XPath is valid
@@ -21,10 +23,14 @@ def check_xml_xpath(my_string, file_name):
     :param file_name: <str>
     :return: flag: <boolean.
     """
+
+    my_string = check_for_leading_characters(my_string)
+
     with open(file_name, 'r') as input:
         for line in input:
             if my_string in line:
-                flag = True
+                if check_xml_string(my_string, line):
+                    flag = True
                 break
             else:
                 flag = False
@@ -33,6 +39,26 @@ def check_xml_xpath(my_string, file_name):
         print('Invalid XML XPath')
 
     return flag
+
+
+def check_xml_string(my_string, target_string):
+    """
+    This function checks that the XPath is valid
+    :param my_string:
+    :param target_string:
+    :return:
+    """
+    my_string = my_string.replace('/', ' ')
+    my_string = my_string.split()
+
+    target_string = target_string.replace('/', ' ')
+    target_string = target_string.split()
+
+    if set(my_string).issubset(set(target_string)):
+        return True
+    else:
+        return False
+
 
 if __name__=="__main__":
     print(check_for_leading_characters('6hello'))
@@ -45,4 +71,9 @@ if __name__=="__main__":
     print(check_for_leading_characters('.////hello-how/are-you'))
 
     string = 'I-PDU-PORT-REFS/I-PDU-PORT-REF'
-    check_xml_xpath(string, 'arxml_tag_path_export_no_brackets.txt')
+    x = check_xml_xpath(string, 'arxml_tag_path_export_no_brackets.txt')
+    print(x)
+
+    a = '-PDU-PORT-REFS/I-PDU-PORT-REF'
+    b = '/AUTOSAR/AR-PACKAGES/AR-PACKAGE/AR-PACKAGES/AR-PACKAGE/ELEMENTS/ETHERNET-CLUSTER/ETHERNET-CLUSTER-VARIANTS/ETHERNET-CLUSTER-CONDITIONAL/PHYSICAL-CHANNELS/ETHERNET-PHYSICAL-CHANNEL/PDU-TRIGGERINGS/PDU-TRIGGERING/I-PDU-PORT-REFS/I-PDU-PORT-REF'
+    print(check_xml_string(a, b))

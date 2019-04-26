@@ -157,4 +157,5 @@ if __name__=="__main__":
     #A.iterate_with_iterparse("SHORT-LABEL")
     #A.get_xml_tags_path(write_to_file=1)
     #A.get_xml_tags_path(with_brackets=0)
-    A.find_using_tag_name_or_path('.//aI-PDU-PORT-REFS/I-PDU-PORT-REF', tag_text_attrib='all')
+    #A.find_using_tag_name_or_path('.//I-PDU-PORT-REFS/I-PDU-PORT-REF', tag_text_attrib='all')
+    A.find_using_tag_name_or_path('.//PDU-TRIGGERING/SHORT-NAME')
