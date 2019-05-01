@@ -83,7 +83,8 @@ class ArxmlExtraction:
         if write_to_file:
             f.close()
 
-    def get_xml_tags_path(self, write_to_file=True, with_brackets=False):
+    def get_xml_tags_path(self, write_to_console=False, write_to_file=True,
+                          with_brackets=False):
         """
         :param write_to_file: boolean
         :param with_brackets: boolean
@@ -102,35 +103,36 @@ class ArxmlExtraction:
             path = self.tree.getpath(i)
             if not with_brackets:
                 path = re.sub(pattern, '', path)
-            print(path)
+            if write_to_console:
+                print(path)
             if write_to_file:
                 f.write(path + '\n')
 
         if write_to_file:
             f.close()
 
-    def find_using_tag_name_or_path(self, x, tag_text_attrib='all'):
+    def find_using_tag_name_or_path(self, str_path, tag_text_attrib='all'):
         """
         search using relative path name, path name must match exactly
-        :param x: <str> example of relative path name, './/PDU-TRIGGERING/I-PDU-PORT-REFS'
+        :param str_path: <str> example of relative path name'.//PDU-TRIGGERING/I-PDU-PORT-REFS'
         :param tag_text_attrib: <str> choose from 'tag', 'text, 'attrib', or 'all'
         :return:
         """
 
-        x = check_for_leading_characters(x)
+        str_path = check_for_leading_characters(str_path)
 
-        check_xpath = check_xml_xpath(x, 'arxml_tag_path_export_no_brackets.txt')
+        check_xpath = check_xml_xpath(str_path, 'arxml_tag_path_export_no_brackets.txt')
 
         if not check_xpath:
             raise Exception('This is an invalid XPath')
 
         # check to see if the search string contains './/' otherwise add './/' to the front
-        if './/' in x[0:3]:
+        if './/' in str_path[0:3]:
             pass
         else:
-            x = './/' + x
+            str_path = './/' + str_path
 
-        for i in self.root.iterfind(x):
+        for i in self.root.iterfind(str_path):
             if tag_text_attrib == 'tag':
                 print(i.tag)
             elif tag_text_attrib == 'text':
@@ -143,19 +145,21 @@ class ArxmlExtraction:
 
 if __name__=="__main__":
     file = 'Cluster_Ethernet_FixedRepeatedShortNames_Rev2_20190311.arxml'
-    file_output = 'temp.xml'
+    file_output = 'temp_arxml.xml'
     A = ArxmlExtraction(file, file_output)
     A.remove_arxml_namespace()
     A.import_arxml()
     #A.iterate_recursively('I-SIGNAL-TRIGGERING-REF', 'all')
     #A.iterate_recursively('DIAG-PDU-TYPE', 'attrib')
-    # A.iterate_recursively('ELEMENTS', 'text')
+    #A.iterate_recursively('ELEMENTS', 'text')
     #A.iterate_recursively('I-SIGNAL-PORT', 'all')
     #A.iterate_recursively('SHORT-NAME', 'text')
     #A.iterate_recursively(tag_text_attrib='all')
     #A.get_xml_tags_tree(write_to_file=1, keep_index=0)
     #A.iterate_with_iterparse("SHORT-LABEL")
-    #A.get_xml_tags_path(write_to_file=1)
+    #A.get_xml_tags_path(write_to_console=1, write_to_file=1)
     #A.get_xml_tags_path(with_brackets=0)
-    #A.find_using_tag_name_or_path('.//I-PDU-PORT-REFS/I-PDU-PORT-REF', tag_text_attrib='all')
-    A.find_using_tag_name_or_path('.//PDU-TRIGGERING/SHORT-NAME')
+    A.find_using_tag_name_or_path('I-PDU-PORT-REF', tag_text_attrib='all')
+    #A.find_using_tag_name_or_path('.//PDU-TRIGGERING/SHORT-NAME')
+    #A.find_using_tag_name_or_path('blah')
+    #A.find_using_tag_name_or_path('.//I-SIGNAL-I-PDU/CONTAINED-I-PDU-PROPS/TRIGGER')
