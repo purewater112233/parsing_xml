@@ -2,6 +2,7 @@ from helpers import check_for_leading_characters, check_xml_xpath
 from lxml import etree
 from collections import Counter
 from remove_autosar_tag import replace_line
+import os
 import re
 import sys
 
@@ -121,6 +122,11 @@ class ArxmlExtraction:
 
         str_path = check_for_leading_characters(str_path)
 
+        #check if the path export file already exists and if not, create it
+        file_exists = os.path.isfile('arxml_tag_path_export_no_brackets.txt')
+        if not file_exists:
+            self.get_xml_tags_path(write_to_console=0, write_to_file=1, with_brackets=0)
+
         check_xpath = check_xml_xpath(str_path, 'arxml_tag_path_export_no_brackets.txt')
 
         if not check_xpath:
@@ -159,7 +165,7 @@ if __name__=="__main__":
     #A.iterate_with_iterparse("SHORT-LABEL")
     #A.get_xml_tags_path(write_to_console=1, write_to_file=1)
     #A.get_xml_tags_path(with_brackets=0)
-    A.find_using_tag_name_or_path('I-PDU-PORT-REF', tag_text_attrib='all')
+    #A.find_using_tag_name_or_path('I-PDU-PORT-REF', tag_text_attrib='all')
     #A.find_using_tag_name_or_path('.//PDU-TRIGGERING/SHORT-NAME')
     #A.find_using_tag_name_or_path('blah')
-    #A.find_using_tag_name_or_path('.//I-SIGNAL-I-PDU/CONTAINED-I-PDU-PROPS/TRIGGER')
+    A.find_using_tag_name_or_path('.//DCM-I-PDU/SHORT-NAME')
