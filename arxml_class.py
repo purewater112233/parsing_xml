@@ -3,6 +3,7 @@ from lxml import etree
 from collections import Counter
 from remove_autosar_tag import replace_line
 import os
+import pandas
 import re
 import sys
 
@@ -149,7 +150,48 @@ class ArxmlExtraction:
                 print("%s - %s - %s" % (i.tag, i.text, i.attrib))
 
 
+    def diag_pdu(self):
+        """
+        This method returns a pandas Dataframe of the PDUs of the arxml file.
+        Note that this method may be specific to the temp_arxml.xml file that
+        is currently being parsed.
+        :return: pandas DataFrame
+        """
+        df = pandas.DataFrame()
+        temp_dir = './/DCM-I-PDU'
+        for i in self.root.findall(temp_dir):
+            short_name = i.find('SHORT-NAME').text
+            length = i.find('LENGTH').text
+            diag_pdu_type = i.find('DIAG-PDU-TYPE').text
+            temp = pandas.Series([short_name, length, diag_pdu_type])
+            df = df.append(temp, ignore_index=True)
+
+        temp_list = []
+        temp_dir = './/ETHERNET-PHYSICAL-CHANNEL/PDU-TRIGGERINGS/PDU-TRIGGERING'
+        for i in self.root.findall(temp_dir):
+            j = i.find('I-PDU-REF').attrib
+            if 'DCM-I-PDU' in j.values():
+                temp_list.append(i.find('I-PDU-REF').text)
+
+        df['Path'] = temp_list
+        df.columns = ['Name', 'Length(Byte)', 'DIAG-PDU-TYPE', 'Path']
+        print(df)
+
+
+    def signal_pdu(self):
+        temp_list = []
+        a = './/I-SIGNAL-I-PDU'
+        for i in self.root.findall(a):
+            temp_list.append(
+                [i.find('SHORT-NAME').text, i.find('LENGTH').text, i.tag])
+
+        a = pandas.DataFrame(temp_list,
+                         columns=['Name', 'Length(Byte)', 'PDU_Type'])
+        print(a)
+
 if __name__=="__main__":
+    pandas.set_option('display.max_columns', None)  # or 1000
+
     file = 'Cluster_Ethernet_FixedRepeatedShortNames_Rev2_20190311.arxml'
     file_output = 'temp_arxml.xml'
     A = ArxmlExtraction(file, file_output)
@@ -158,8 +200,8 @@ if __name__=="__main__":
     #A.iterate_recursively('I-SIGNAL-TRIGGERING-REF', 'all')
     #A.iterate_recursively('DIAG-PDU-TYPE', 'attrib')
     #A.iterate_recursively('ELEMENTS', 'text')
-    #A.iterate_recursively('I-SIGNAL-PORT', 'all')
-    #A.iterate_recursively('SHORT-NAME', 'text')
+    # A.iterate_recursively('I-SIGNAL-PORT', 'all')
+    # A.iterate_recursively('SHORT-NAME', 'text')
     #A.iterate_recursively(tag_text_attrib='all')
     #A.get_xml_tags_tree(write_to_file=1, keep_index=0)
     #A.iterate_with_iterparse("SHORT-LABEL")
@@ -168,4 +210,6 @@ if __name__=="__main__":
     #A.find_using_tag_name_or_path('I-PDU-PORT-REF', tag_text_attrib='all')
     #A.find_using_tag_name_or_path('.//PDU-TRIGGERING/SHORT-NAME')
     #A.find_using_tag_name_or_path('blah')
-    A.find_using_tag_name_or_path('.//DCM-I-PDU/SHORT-NAME')
+    #A.find_using_tag_name_or_path('.//DCM-I-PDU/SHORT-NAME', tag_text_attrib='all')
+    A.diag_pdu()
+    A.signal_pdu()
