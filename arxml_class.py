@@ -189,6 +189,15 @@ class ArxmlExtraction:
                          columns=['Name', 'Length(Byte)', 'PDU_Type'])
         print(a)
 
+
+    def get_signals_from_pdu(self, pdu_group):
+        for i in self.root.findall(".//PDU-TRIGGERING"):
+            if i.find('SHORT-NAME').text == pdu_group:
+                print(i.find('I-PDU-REF').text)
+                temp_text = i.findall('.//I-SIGNAL-TRIGGERINGS/*/*')
+                for x in temp_text:
+                    print(x.text)
+
 if __name__=="__main__":
     pandas.set_option('display.max_columns', None)  # or 1000
 
@@ -213,3 +222,6 @@ if __name__=="__main__":
     #A.find_using_tag_name_or_path('.//DCM-I-PDU/SHORT-NAME', tag_text_attrib='all')
     A.diag_pdu()
     A.signal_pdu()
+    A.get_signals_from_pdu('ACM_AirbagInfo1_MCS2_ETH')
+    A.get_signals_from_pdu('ACM_AirbagInfo1_SVC3_ETH')
+    A.get_signals_from_pdu('ACM_AirbagInfo2_MCS2_ETH')
