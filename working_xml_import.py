@@ -1,11 +1,9 @@
 from lxml import etree
 from collections import Counter
 
-file_name = "removed_xmlns.arxml"
-
 # import the arxml file
 
-tree = etree.parse("../parsing_xml/removed_xmlns.arxml")    # tree is an ElementTree instance
+tree = etree.parse("../parsing_xml/temp_arxml.xml")    # tree is an ElementTree instance
 root = tree.getroot()                                       # root is an Element instance
 
 print(type(tree))
